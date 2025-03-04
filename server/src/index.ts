@@ -3,7 +3,8 @@ require('dotenv').config();
 import express, { Application } from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { connectDatabase } from './database';
-import { typeDefs, resolvers } from './graphql';
+import { typeDefs } from './graphql';
+import { resolvers } from './graphql/resolvers'
 
 const startServer = async (app: Application) => {
     const db = await connectDatabase();
@@ -21,7 +22,6 @@ const startServer = async (app: Application) => {
     });
 
     const listings = await db.listings.find({}).toArray();
-    console.log(listings);
 }
 
 startServer(express());

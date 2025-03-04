@@ -1,10 +1,14 @@
 import { IResolvers } from '@graphql-tools/utils';
-import { Database } from '../lib/types'
+import { Database, Listing } from '../../../lib/types'
 import { ObjectId } from 'mongodb';
 
-export const resolvers: IResolvers = {
+export const listingResolvers: IResolvers = {
     Query: {
-        listings: async (_root: undefined, _args: {}, { db }: { db: Database }) => {
+        listings: async (
+            _root: undefined, 
+            _args: {}, 
+            { db }: { db: Database }
+        ): Promise<Listing[]> => {
             return await db.listings.find({}).toArray();
         }
     },
@@ -13,17 +17,20 @@ export const resolvers: IResolvers = {
             _root: undefined, 
             { id }: {id: string}, 
             { db }: { db: Database }
-        ) => {
+        ): Promise<Listing> => {
             const deleteRes = await db.listings.findOneAndDelete({
-                _id: new ObjectId(),
+                _id: new ObjectId(id),
             })
 
-            if (!deleteRes.value) {
+            if (!deleteRes) {
                 throw new Error('Failed to delete listing');
             }
 
-            return deleteRes.value;
+            return deleteRes;
         }
+    },
+    Listing: {
+        id: (listing: Listing): string => listing._id.toString()
     }
 };
 
