@@ -1,0 +1,29 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+type Listing {
+  id: ID!
+  title: String!
+  description: String!
+  address: String!
+  image: String!
+  price: Int!
+  numOfGuests: Int!
+  numOfBeds: Int!
+  numOfBaths: Int!
+  rating: Int!
+}
+type Query {
+  listings: [Listing!]!
+}
+type Mutation {
+  deleteListing(id: ID!): Listing!
+}
+"Exposes a URL that specifies the behavior of this scalar."
+directive @specifiedBy(
+    "The URL that specifies the behavior of this scalar."
+    url: String!
+  ) on SCALAR
+"Indicates exactly one field must be supplied and this field must not be `null`."
+directive @oneOf on INPUT_OBJECT
