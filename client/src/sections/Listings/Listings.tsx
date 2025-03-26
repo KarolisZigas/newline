@@ -1,5 +1,5 @@
 import { useQuery, useMutation, gql } from '@apollo/client'
-import { ListingsQuery, DeleteListingMutation, DeleteListingMutationVariables } from "../../generated/graphql";
+import { ListingsQuery, MutationCreateBookingArgs, DeleteListingMutation, DeleteListingMutationVariables } from "../../generated/graphql";
 import { Alert, Button, List, Avatar, Spin } from 'antd';
 import { ListingSkeleton } from './components';
 import './styles/Listings.css'
@@ -16,6 +16,7 @@ const LISTINGS = gql`
             numOfBeds
             numOfBaths
             rating
+            numOfBookings
         }
     }
 `;
@@ -23,6 +24,14 @@ const LISTINGS = gql`
 const DELETE_LISTING = gql`
     mutation DeleteListing($id: ID!) {
         deleteListing(id: $id) {
+            id
+        }
+    }
+`;
+
+const CREATE_BOOKING = gql`
+    mutation CreateBooking($id: ID!) {
+        createBooking(id: $id) {
             id
         }
     }
@@ -46,6 +55,24 @@ export const Listings = ({ title }: Props) => {
     DeleteListingMutationVariables
     >(DELETE_LISTING);
 
+    const [
+    createBooking, 
+    { 
+        loading: createBookingLoading, 
+        error: createBookingError 
+    }
+    ] = useMutation<
+    MutationCreateBookingArgs
+    >(CREATE_BOOKING, {
+        refetchQueries: ['Bookings'],
+        awaitRefetchQueries: true
+    });
+
+    const handleCreateBooking = async (id: string) => {
+        await createBooking({ variables: { id } });
+        refetch();
+    }
+
     const handleDeleteListing = async (id: string) => {
         await deleteListing({ variables: { id } });
         refetch();
@@ -60,6 +87,10 @@ export const Listings = ({ title }: Props) => {
             renderItem={(listing) => (
                 <List.Item 
                 actions={[
+                    <Button
+                        type="primary"
+                        onClick={() => handleCreateBooking(listing.id)}
+                    >Book</Button>,
                     <Button 
                         type="primary" 
                         onClick={() => handleDeleteListing(listing.id)}>Delete</Button>
@@ -74,6 +105,9 @@ export const Listings = ({ title }: Props) => {
                                     size={48}
                                 />
                             }/>
+                        {listing.numOfBookings > 0 && (
+                            <div>{listing.numOfBookings}x booked</div>
+                        )}
                 </List.Item>
             )}/>
         ) : null;
@@ -94,6 +128,15 @@ export const Listings = ({ title }: Props) => {
         )
     }
 
+    const createBookingErrorAlert = createBookingError
+    ? (
+        <Alert
+            type='error'
+            message='Couldnt create a booking. Something went wrong. Please try again'
+            className='listings-skeleton__alert'
+        />
+    ) : null;
+
     const deleteListingErrorAlert = deleteListingError
     ? (
         <Alert
@@ -105,8 +148,9 @@ export const Listings = ({ title }: Props) => {
 
     return (
         <div className='listings'>
-            <Spin spinning={deleteListingLoading}>
+            <Spin spinning={deleteListingLoading || createBookingLoading}>
                 {deleteListingErrorAlert}
+                {createBookingErrorAlert}
                 <h2>{title}</h2>
                 {listingsList}
             </Spin>

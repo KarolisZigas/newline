@@ -1,6 +1,6 @@
 require('dotenv').config();
 import { connectDatabase } from '../src/database';
-import { Listing } from '../src/lib/types';
+import { Booking, Listing } from '../src/lib/types';
 import { ObjectId } from 'mongodb';
 
 const seed = async () => {
@@ -21,7 +21,8 @@ const seed = async () => {
               numOfGuests: 2,
               numOfBeds: 1,
               numOfBaths: 2,
-              rating: 5
+              rating: 5,
+              numOfBookings: 0
             },
             {
               _id: new ObjectId(),
@@ -34,7 +35,8 @@ const seed = async () => {
               numOfGuests: 2,
               numOfBeds: 1,
               numOfBaths: 1,
-              rating: 4
+              rating: 4,
+              numOfBookings: 0
             },
             {
               _id: new ObjectId(),
@@ -47,12 +49,29 @@ const seed = async () => {
               numOfGuests: 3,
               numOfBeds: 2,
               numOfBaths: 2,
-              rating: 3
+              rating: 3,
+              numOfBookings: 0
             }
           ];
 
+        const bookings: Booking[] = [
+            {
+              _id: new ObjectId(),
+              title: "Luxurious home with private pool",
+              image:
+                "https://res.cloudinary.com/tiny-house/image/upload/v1560645376/mock/Los%20Angeles/los-angeles-listing-1_aikhx7.jpg",
+              address:
+                "100 Hollywood Hills Dr, Los Angeles, California",
+              timestamp: '1742978603',
+            },
+        ]
+
         for (const listing of listings) {
             await db.listings.insertOne(listing);
+        }
+
+        for (const booking of bookings) {
+          await db.bookings.insertOne(booking);
         }
 
         console.log('[seed]: success');
