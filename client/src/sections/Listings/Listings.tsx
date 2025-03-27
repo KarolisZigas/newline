@@ -28,11 +28,7 @@ const DELETE_LISTING = gql`
     }
 `;
 
-interface Props { 
-    title: string;
-}
-
-export const Listings = ({ title }: Props) => {
+export const Listings = () => {
     const { data, loading, error, refetch } = useQuery<ListingsQuery>(LISTINGS);
 
     const [
@@ -81,7 +77,7 @@ export const Listings = ({ title }: Props) => {
     if (loading) {
         return (
             <div className='listings'>
-                <ListingSkeleton title={title} />
+                <ListingSkeleton title={"title"} />
             </div>
         )
     }
@@ -89,7 +85,7 @@ export const Listings = ({ title }: Props) => {
     if (error) {
         return (
             <div className='listings'>
-                <ListingSkeleton title={title} error />
+                <ListingSkeleton title={"title"} error />
             </div>
         )
     }
@@ -107,7 +103,7 @@ export const Listings = ({ title }: Props) => {
         <div className='listings'>
             <Spin spinning={deleteListingLoading}>
                 {deleteListingErrorAlert}
-                <h2>{title}</h2>
+                <h2>TinyHouse Listings</h2>
                 {listingsList}
             </Spin>
         </div>

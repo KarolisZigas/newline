@@ -1,7 +1,9 @@
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import reportWebVitals from './reportWebVitals';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
-import { Listings } from './sections';
+import { Home, Host, Listing, Listings, NotFound, User } from './sections';
+import './styles/index.css';
 
 const client = new ApolloClient({
   uri: "/api",
@@ -11,9 +13,25 @@ const client = new ApolloClient({
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+const App = () => {
+  return (
+    <Router>
+        <Routes>
+          <Route path="/" Component={Home}/>
+          <Route path="/host" Component={Host}/>
+          <Route path='/listing/:id' Component={Listing}/>
+          <Route path='/listings/:location?' Component={Listings}/>
+          <Route path='/user/:id' Component={User}/>
+          <Route path="*" Component={NotFound}/>
+        </Routes>
+    </Router>
+  )
+}
+
 root.render(
   <ApolloProvider client={client}>
-    <Listings title="TinyHouse Listings" />
+    <App/>
   </ApolloProvider>
 );
 
